@@ -1,0 +1,60 @@
+{
+  "routes": [
+    {
+      "name": "Home",
+      "path": "/",
+      "component": "HomePage",
+      "title": "Home",
+      "layout": "public",
+      "showInNav": true
+    },
+    {
+      "name": "Menu",
+      "path": "/menu",
+      "component": "MenuPage",
+      "title": "Menu",
+      "layout": "public",
+      "showInNav": true
+    },
+    {
+      "name": "Contact",
+      "path": "/contact",
+      "component": "ContactPage",
+      "title": "Contact",
+      "layout": "public",
+      "showInNav": true
+    },
+    {
+      "name": "Login",
+      "path": "/login",
+      "component": "LoginPage",
+      "title": "Login",
+      "layout": "auth",
+      "showInNav": false
+    },
+    {
+      "name": "Signup",
+      "path": "/signup",
+      "component": "SignupPage",
+      "title": "Signup",
+      "layout": "auth",
+      "showInNav": false
+    },
+    {
+      "name": "Item",
+      "path": "/item/:slug",
+      "component": "ItemPage",
+      "title": "Item",
+      "layout": "public",
+      "showInNav": false
+    },
+    {
+      "name": "Cart",
+      "path": "/cart",
+      "component": "CartPage",
+      "title": "Cart",
+      "layout": "public",
+      "showInNav": false
+    }
+  ]
+}

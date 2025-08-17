@@ -1,0 +1,117 @@
+{
+  "routes": [
+    {
+      "name": "UserDashboard",
+      "path": "/dashboard",
+      "component": "UserDashboard",
+      "title": "Overview",
+      "subtitle": "Your account and recent activity",
+      "layout": "dashboard",
+      "role": "user"
+    },
+    {
+      "name": "UserOrders",
+      "path": "/orders/history",
+      "component": "UserOrdersPage",
+      "title": "My Orders",
+      "subtitle": "Track and reorder your favorites",
+      "layout": "dashboard",
+      "role": "user"
+    },
+    {
+      "name": "UserOrderDetail",
+      "path": "/orders/:id",
+      "component": "UserOrderDetailPage",
+      "title": "Order Details",
+      "layout": "dashboard",
+      "role": "user"
+    },
+    {
+      "name": "UserFavorites",
+      "path": "/favorites",
+      "component": "UserFavoritesPage",
+      "title": "Favorites",
+      "layout": "dashboard",
+      "role": "user"
+    },
+    {
+      "name": "UserAddresses",
+      "path": "/addresses",
+      "component": "UserAddressesPage",
+      "title": "Addresses",
+      "subtitle": "Manage delivery locations",
+      "layout": "dashboard",
+      "role": "user"
+    },
+    {
+      "name": "Settings",
+      "path": "/settings",
+      "component": "SettingsPage",
+      "title": "Settings",
+      "layout": "dashboard",
+      "role": "both"
+    },
+    {
+      "name": "AdminDashboard",
+      "path": "/admin",
+      "component": "AdminDashboard",
+      "title": "Admin Home",
+      "subtitle": "Today\u2019s snapshot and quick links",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminOrders",
+      "path": "/admin/orders",
+      "component": "AdminOrdersPage",
+      "title": "Orders Queue",
+      "subtitle": "Live orders & statuses",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminOrderDetail",
+      "path": "/admin/orders/:id",
+      "component": "AdminOrderDetailPage",
+      "title": "Order Detail",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminMenu",
+      "path": "/admin/menu",
+      "component": "AdminMenuPage",
+      "title": "Menu Manager",
+      "subtitle": "Items, variants, modifiers",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminUsers",
+      "path": "/admin/users",
+      "component": "AdminUsersPage",
+      "title": "Customers",
+      "subtitle": "User list & activity",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminCoupons",
+      "path": "/admin/coupons",
+      "component": "AdminCouponsPage",
+      "title": "Coupons",
+      "subtitle": "Promo codes & discounts",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminReports",
+      "path": "/admin/reports",
+      "component": "AdminReportsPage",
+      "title": "Reports",
+      "subtitle": "Sales, items, and performance",
+      "layout": "dashboard",
+      "role": "admin"
+    }
+  ]
+}
