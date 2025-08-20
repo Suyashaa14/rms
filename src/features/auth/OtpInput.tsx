@@ -44,7 +44,9 @@ export default function OtpInput({ value, onChange, disabled, autoFocus }: Props
       {value.map((digit, i) => (
         <input
           key={i}
-          ref={el => (inputsRef.current[i] = el)}
+          ref={el => {
+            inputsRef.current[i] = el;
+          }}
           inputMode="numeric"
           pattern="\d*"
           maxLength={1}
@@ -60,3 +62,4 @@ export default function OtpInput({ value, onChange, disabled, autoFocus }: Props
     </div>
   )
 }
+
