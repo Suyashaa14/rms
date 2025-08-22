@@ -30,7 +30,6 @@ const steps = [
   },
 ]
 
-// Use Variants + easing array for TS safety
 const container: Variants = {
   hidden: { opacity: 0, y: 12 },
   show: {
@@ -39,7 +38,6 @@ const container: Variants = {
     transition: {
       staggerChildren: 0.08,
       delayChildren: 0.05,
-      // no 'ease' here — only orchestrating children
     },
   },
 }
@@ -49,13 +47,13 @@ const item: Variants = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }, // easeOut-ish
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
   },
 }
 
 export default function HowItWorks() {
   return (
-    <Section className="bg-white">
+    <Section className="bg-white min-h-screen snap-start flex items-center">
       <Container>
         {/* Heading */}
         <div className="mx-auto mb-12 md:mb-16 max-w-3xl text-center">

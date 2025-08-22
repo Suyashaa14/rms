@@ -1,3 +1,4 @@
+// src/features/home/PromoBanner.tsx
 import Section from '../../components/common/Section'
 import Container from '../../components/common/Container'
 import { Button } from '../../components/ui/button'
@@ -6,7 +7,7 @@ import { motion } from 'framer-motion'
 
 export default function PromoBanner() {
   return (
-    <Section className="py-10 md:py-16">
+    <Section className="min-h-screen snap-start flex items-center py-0 md:py-0">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -56,7 +57,7 @@ export default function PromoBanner() {
               </div>
             </div>
 
-            {/* RIGHT: copy (unchanged) */}
+            {/* RIGHT: copy */}
             <div className="text-neutral-900">
               <div className="text-sm md:text-base tracking-[0.22em] font-semibold uppercase">
                 Today Special Offer
