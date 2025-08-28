@@ -31,16 +31,15 @@ export default function AuthPage({ mode }: { mode: Mode }) {
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useAppDispatch()
-  const token = useAppSelector(s => s.auth.token)
-  const user = useAppSelector(s => s.auth.user)
+  const { token, user } = useAppSelector(s => s.auth)
 
-  // login form state (signup handled inside StepSignupForm)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    // If already logged in, send user where they belong
     if (token && user) {
       navigate(user.role === 'admin' ? '/admin' : '/dashboard', { replace: true })
     }
@@ -63,15 +62,26 @@ export default function AuthPage({ mode }: { mode: Mode }) {
       const payload = decodeJwt(access_token) || {}
       const meta = payload?.user_metadata || {}
 
-      const role = meta.userRole === 'Admin' ? 'admin' : 'user'
+      // ---- Robust role detection (case-insensitive, multiple field names) ----
+      const rawRole = String((meta.userRole ?? meta.role ?? payload.role ?? payload.userRole ?? '')).toLowerCase()
+      const role: 'admin' | 'user' = rawRole === 'admin' ? 'admin' : 'user'
       const id = String(meta.id ?? payload.sub ?? '')
       const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || undefined
       const finalEmail = meta.email || email.trim()
 
       dispatch(setUser({ id, email: finalEmail, name, role }))
 
-      const from = (location.state as any)?.from?.pathname
-      navigate(from || (role === 'admin' ? '/admin' : '/dashboard'), { replace: true })
+      // ---- Redirect logic: admin -> /admin; user -> /dashboard (or original non-admin page) ----
+      const from = (location.state as any)?.from?.pathname as string | undefined
+      const adminDefault = '/admin'
+      const userDefault = '/dashboard'
+      let target: string
+      if (role === 'admin') {
+        target = from && from.startsWith('/admin') ? from : adminDefault
+      } else {
+        target = from && !from.startsWith('/admin') ? from : userDefault
+      }
+      navigate(target, { replace: true })
     } catch {
       setError('Invalid email or password.')
     } finally {
@@ -82,7 +92,7 @@ export default function AuthPage({ mode }: { mode: Mode }) {
   // ---- UI (outer layout preserved) ----
   const mainImage = isSignup ? SIGNUP : LOGIN
 
-  return (
+ return (
     <Section className="relative">
       <Container className="relative">
         <div className="grid md:grid-cols-2 gap-10 items-center">
@@ -197,7 +207,3 @@ export default function AuthPage({ mode }: { mode: Mode }) {
     </Section>
   )
 }
-
-
-
-

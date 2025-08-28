@@ -110,10 +110,11 @@ const AppRoutes: React.FC = () => {
               path={path}
               element={
                 <RequireRole role="user">
-                  <DashboardLayout role="user" title={title} subtitle={subtitle}>
-                    <Component />
-                  </DashboardLayout>
-                </RequireRole>
+                <PublicLayout>
+                  <Component />
+                </PublicLayout>
+              </RequireRole>
+              
               }
             />
           )
@@ -121,22 +122,29 @@ const AppRoutes: React.FC = () => {
 
         {/* SETTINGS (both roles) */}
         {privateRoutesConfig.filter(r => r.role === 'both').map(({ name, path, component, title }) => {
-          const Component = componentMap[component] as React.ComponentType
-          const role = user?.role === 'admin' ? 'admin' : 'user'
-          return (
-            <Route
-              key={name}
-              path={path}
-              element={
-                <RequireAuth>
-                  <DashboardLayout role={role} title={title}>
-                    <Component />
-                  </DashboardLayout>
-                </RequireAuth>
-              }
-            />
-          )
-        })}
+  const Component = componentMap[component] as React.ComponentType
+  const role = user?.role === 'admin' ? 'admin' : 'user'
+  return (
+    <Route
+      key={name}
+      path={path}
+      element={
+        <RequireAuth>
+          {role === 'admin' ? (
+            <DashboardLayout role="admin" title={title}>
+              <Component />
+            </DashboardLayout>
+          ) : (
+            <PublicLayout>
+              <Component />
+            </PublicLayout>
+          )}
+        </RequireAuth>
+      }
+    />
+  )
+})}
+
 
         {/* ADMIN dashboard */}
         {privateRoutesConfig.filter(r => r.role === 'admin').map(({ name, path, component, title, subtitle }) => {

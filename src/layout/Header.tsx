@@ -12,6 +12,8 @@ import { Button } from '../components/ui/button'
 const isAuthPath = (path: string) => path === '/login' || path === '/signup'
 
 export default function Header() {
+  const auth = useAppSelector((s) => s.auth)
+
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
   const { lines } = useAppSelector(selectCart)
@@ -93,12 +95,36 @@ export default function Header() {
           </Link>
 
           {/* Login / Sign up styled like Cart */}
-          <Link to="/login" className={cn(chipBase, overlay ? chipHome : chipDefault)}>
-            <span className="text-sm font-medium">Log in</span>
-          </Link>
-          <Link to="/signup" className={cn(chipBase, overlay ? chipHome : chipDefault)}>
-            <span className="text-sm font-medium">Sign up</span>
-          </Link>
+          {/* Right side actions */}
+          {auth?.user ? (
+            <div className="hidden md:flex items-center gap-3">
+              <Link to="/orders/history" className={cn(chipBase, overlay ? chipHome : chipDefault)}>
+                <span className="text-sm font-medium">Order History</span>
+              </Link>
+              <button
+                onClick={() => window.location.assign('/settings')}
+                className={cn(chipBase, overlay ? chipHome : chipDefault)}
+              >
+                <span className="text-sm font-medium">{auth.user.name || 'Account'}</span>
+              </button>
+              <button
+                onClick={() => { localStorage.clear(); window.location.assign('/'); }}
+                className={cn(chipBase, overlay ? chipHome : chipDefault)}
+              >
+                <span className="text-sm font-medium">Log out</span>
+              </button>
+            </div>  
+          ) : (
+            <div className="hidden md:flex items-center gap-3">
+              <Link to="/login" state={{ from: { pathname } }} className={cn(chipBase, overlay ? chipHome : chipDefault)}>
+                <span className="text-sm font-medium">Log in</span>
+              </Link>
+              <Link to="/signup" className={cn(chipBase, overlay ? chipHome : chipDefault)}>
+                <span className="text-sm font-medium">Sign up</span>
+              </Link>
+            </div>
+          )}
+
         </div>
 
         {/* Mobile menu trigger */}
@@ -143,12 +169,29 @@ export default function Header() {
               ))}
 
               {/* Mobile auth links */}
-              <Link to="/login" onClick={() => setOpen(false)} className="rounded-xl px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition">
-                Log in
-              </Link>
-              <Link to="/signup" onClick={() => setOpen(false)} className="rounded-xl px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition">
-                Sign up
-              </Link>
+              {/* Mobile auth links */}
+              {auth?.user ? (
+                <>
+                  <Link to="/orders/history" onClick={() => setOpen(false)} className="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition">Order History</Link>
+                  <Link to="/settings" onClick={() => setOpen(false)} className="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition">Account</Link>
+                  <button
+                    onClick={() => { setOpen(false); localStorage.clear(); window.location.assign('/'); }}
+                    className="text-left px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+                  >
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setOpen(false)} className="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition">
+                    Log in
+                  </Link>
+                  <Link to="/signup" onClick={() => setOpen(false)} className="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition">
+                    Sign up
+                  </Link>
+                </>
+              )}
+
             </div>
           </SheetContent>
         </Sheet>

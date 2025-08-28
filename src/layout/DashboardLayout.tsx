@@ -2,7 +2,22 @@
 import React, { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { cn } from '../lib/cn'
-import { Menu, LayoutDashboard, ShoppingBag, Settings, LogOut, Home, Users, Receipt, ChefHat, Percent, BarChart3, MapPin, Heart } from 'lucide-react'
+import {
+  Menu as MenuIcon,
+  LayoutDashboard,
+  ShoppingBag,
+  Settings,
+  LogOut,
+  Home,
+  Users,
+  Receipt,
+  ChefHat,
+  Percent,
+  BarChart3,
+  MapPin,
+  Heart,
+  Tags,
+} from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet'
 import { Button } from '../components/ui/button'
 import { useAppDispatch, useAppSelector } from '../hooks/hooks'
@@ -23,12 +38,14 @@ const navByRole: Record<Role, Array<{ to: string; label: string; icon: React.Com
     { to: '/admin', label: 'Admin Home', icon: LayoutDashboard },
     { to: '/admin/orders', label: 'Orders Queue', icon: Receipt },
     { to: '/admin/menu', label: 'Menu Manager', icon: ChefHat },
+    // ✅ NEW: Categories in the admin sidebar
+    { to: '/admin/categories', label: 'Categories', icon: Tags },
     { to: '/admin/coupons', label: 'Coupons', icon: Percent },
     { to: '/admin/users', label: 'Customers', icon: Users },
     { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
-    { to: '/settings', label: 'Settings', icon: Settings },
   ],
 }
+
 export default function DashboardLayout({
   role,
   children,
@@ -46,23 +63,27 @@ export default function DashboardLayout({
   const nav = navByRole[role]
 
   const Sidebar = () => (
-    <aside className="hidden md:flex md:flex-col w-64 h-[calc(100vh-0px)] sticky top-0 border-r bg-white/80 dark:bg-neutral-900/60 backdrop-blur">
-      <div className="h-16 flex items-center px-5 border-b">
-        <Link to="/" className="font-extrabold text-lg">
-          <span className="text-brand">Bites</span> {role === 'admin' ? 'Admin' : 'Account'}
+    <aside className="hidden md:flex md:flex-col w-64 h-[calc(100vh)] sticky top-0 border-r bg-white/80 dark:bg-neutral-900/60 backdrop-blur">
+      <div className="h-16 flex items-center justify-between px-3 border-b">
+        <Link to="/" className="inline-flex items-center gap-2 font-semibold">
+          <Home className="w-5 h-5" />
+          <span>{role === 'admin' ? 'Admin' : 'Dashboard'}</span>
         </Link>
+        <Button variant="ghost" size="icon" asChild>
+          <Link to="/"><ShoppingBag className="w-5 h-5" /></Link>
+        </Button>
       </div>
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="p-3 space-y-1">
         {nav.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition',
+                'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition',
                 isActive
-                  ? 'bg-brand text-brand-fg'
-                  : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                  ? 'bg-neutral-100 dark:bg-neutral-800 font-medium'
+                  : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'
               )
             }
           >
@@ -71,20 +92,12 @@ export default function DashboardLayout({
           </NavLink>
         ))}
       </nav>
-      <div className="p-3 border-t">
-        <div className="px-3 text-xs text-muted-foreground mb-2">{user?.email}</div>
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => dispatch(logout())}
-        >
+      <div className="mt-auto p-3 border-t">
+        <div className="text-xs text-muted-foreground mb-2 truncate">{user?.email}</div>
+        <Button variant="outline" className="w-full" onClick={() => dispatch(logout())}>
           <LogOut className="w-4 h-4 mr-2" />
           Logout
         </Button>
-        <Link to="/" className="mt-2 block text-center text-xs text-muted-foreground hover:underline">
-          <Home className="inline w-3.5 h-3.5 mr-1" />
-          Back to site
-        </Link>
       </div>
     </aside>
   )
@@ -94,72 +107,72 @@ export default function DashboardLayout({
       {/* Desktop Sidebar */}
       <Sidebar />
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Topbar + Drawer */}
       <div className="md:hidden">
-        <div className="h-16 sticky top-0 z-40 border-b bg-white/90 dark:bg-neutral-900/60 backdrop-blur flex items-center px-3 justify-between">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/">
-              <Home className="w-5 h-5" />
-            </Link>
-          </Button>
-          <div className="font-bold">{role === 'admin' ? 'Admin' : 'Dashboard'}</div>
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="w-5 h-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0">
-              <div className="h-16 flex items-center px-5 border-b font-bold">
-                <span className="text-brand">Bites</span> {role === 'admin' ? 'Admin' : 'Account'}
-              </div>
-              <nav className="p-3 space-y-1">
-                {nav.map(({ to, label, icon: Icon }) => (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    onClick={() => setOpen(false)}
-                    className={({ isActive }) =>
-                      cn(
-                        'flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition',
-                        isActive
-                          ? 'bg-brand text-brand-fg'
-                          : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                      )
-                    }
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{label}</span>
-                  </NavLink>
-                ))}
-              </nav>
-              <div className="p-3 border-t">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => { setOpen(false); dispatch(logout()) }}
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+        <div className="h-16 sticky top-0 z-40 border-b bg-white/80 dark:bg-neutral-900/60 backdrop-blur flex items-center px-3 justify-between">
+          <div className="flex items-center gap-2">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button size="icon" variant="ghost">
+                  <MenuIcon className="w-5 h-5" />
                 </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-72">
+                <div className="h-16 flex items-center justify-between px-3 border-b">
+                  <Link to="/" className="inline-flex items-center gap-2 font-semibold" onClick={() => setOpen(false)}>
+                    <Home className="w-5 h-5" />
+                    <span>{role === 'admin' ? 'Admin' : 'Dashboard'}</span>
+                  </Link>
+                </div>
+                <nav className="p-3 space-y-1">
+                  {nav.map(({ to, label, icon: Icon }) => (
+                    <NavLink
+                      key={to}
+                      to={to}
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition',
+                          isActive
+                            ? 'bg-neutral-100 dark:bg-neutral-800 font-medium'
+                            : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                        )
+                      }
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{label}</span>
+                    </NavLink>
+                  ))}
+                </nav>
+                <div className="mt-auto p-3 border-t">
+                  <Button variant="outline" className="w-full" onClick={() => { setOpen(false); dispatch(logout()) }}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Link to="/" className="inline-flex items-center gap-2 font-semibold">
+              <Home className="w-5 h-5" />
+              <span>{role === 'admin' ? 'Admin' : 'Dashboard'}</span>
+            </Link>
+          </div>
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/"><ShoppingBag className="w-5 h-5" /></Link>
+          </Button>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="p-4 md:p-8">
-        {(title || subtitle) && (
-          <div className="mb-6">
-            {title && <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">{title}</h1>}
-            {subtitle && <p className="text-muted-foreground mt-1">{subtitle}</p>}
-          </div>
-        )}
-        <div className="rounded-2xl border bg-white/80 dark:bg-neutral-900/60 backdrop-blur p-4 md:p-6">
+      {/* Main area */}
+      <main className="min-h-dvh bg-neutral-50/60 dark:bg-neutral-900/30">
+        <div className="px-4 md:px-6 py-5 border-b bg-white/70 dark:bg-neutral-900/60 backdrop-blur">
+          <div className="text-xl font-semibold">{title || (role === 'admin' ? 'Admin' : 'Dashboard')}</div>
+          {subtitle && <div className="text-sm text-muted-foreground">{subtitle}</div>}
+        </div>
+        <div className="p-4 md:p-6">
           {children}
         </div>
-      </div>
+      </main>
     </div>
   )
 }

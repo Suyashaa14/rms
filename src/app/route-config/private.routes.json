@@ -6,7 +6,7 @@
       "component": "UserDashboard",
       "title": "Overview",
       "subtitle": "Your account and recent activity",
-      "layout": "dashboard",
+      "layout": "public",
       "role": "user"
     },
     {
@@ -78,11 +78,38 @@
       "role": "admin"
     },
     {
+      "name": "AdminCategories",
+      "path": "/admin/categories",
+      "component": "AdminCategoriesPage",
+      "title": "Categories",
+      "subtitle": "Create, edit, and organize categories",
+      "layout": "dashboard",
+      "role": "admin"
+    },    
+    {
       "name": "AdminMenu",
       "path": "/admin/menu",
       "component": "AdminMenuPage",
       "title": "Menu Manager",
       "subtitle": "Items, variants, modifiers",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminMenuCreate",
+      "path": "/admin/menu/new",
+      "component": "AdminMenuCreatePage",
+      "title": "Create Item",
+      "subtitle": "Add a new menu item",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminMenuEdit",
+      "path": "/admin/menu/:id/edit",
+      "component": "AdminMenuEditPage",
+      "title": "Edit Item",
+      "subtitle": "Update item details",
       "layout": "dashboard",
       "role": "admin"
     },

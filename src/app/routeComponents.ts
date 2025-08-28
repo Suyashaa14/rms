@@ -3,7 +3,7 @@ import { lazy } from 'react'
 export const componentMap: Record<string, React.ComponentType<any>> = {
   // Public/auth pages
   HomePage: lazy(() => import('../features/home/HomePage')),
-  MenuPage: lazy(() => import('../features/menu/MenuPage')),
+  MenuPage: lazy(() => import('../features/menu/Menu')),
   ContactPage: lazy(() => import('../features/contact/ContactPage')),
   ItemPage: lazy(() => import('../features/item/ItemPage')),
   CartPage: lazy(() => import('../features/cart/CartPage')),
@@ -27,4 +27,11 @@ export const componentMap: Record<string, React.ComponentType<any>> = {
   AdminUsersPage: lazy(() => import('../features/admin/users/AdminUsersPage')),
   AdminCouponsPage: lazy(() => import('../features/admin/coupons/AdminCouponsPage')),
   AdminReportsPage: lazy(() => import('../features/admin/reports/AdminReportsPage')),
+
+  // ✅ New: full-page create/edit for Menu
+  AdminMenuCreatePage: lazy(() => import('../features/admin/menu/AdminMenuFormPage')),
+  AdminMenuEditPage: lazy(() => import('../features/admin/menu/AdminMenuFormPage')),
+
+  // ✅ Already added earlier
+  AdminCategoriesPage: lazy(() => import('../features/admin/category/CategoryList')),
 }
