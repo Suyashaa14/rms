@@ -85,7 +85,25 @@
       "subtitle": "Create, edit, and organize categories",
       "layout": "dashboard",
       "role": "admin"
-    },    
+    },  
+    {
+      "name": "AdminCategoryCreate",
+      "path": "/admin/category/create",
+      "component": "AdminCategoryFormPage",
+      "title": "Create Category",
+      "subtitle": "Add a new category",
+      "layout": "dashboard",
+      "role": "admin"
+    },
+    {
+      "name": "AdminCategoryEdit",
+      "path": "/admin/category/:id/edit",
+      "component": "AdminCategoryFormPage",
+      "title": "Edit Category",
+      "subtitle": "Update category",
+      "layout": "dashboard",
+      "role": "admin"
+    },  
     {
       "name": "AdminMenu",
       "path": "/admin/menu",

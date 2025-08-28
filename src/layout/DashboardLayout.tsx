@@ -35,14 +35,11 @@ const navByRole: Record<Role, Array<{ to: string; label: string; icon: React.Com
     { to: '/settings', label: 'Settings', icon: Settings },
   ],
   admin: [
-    { to: '/admin', label: 'Admin Home', icon: LayoutDashboard },
-    { to: '/admin/orders', label: 'Orders Queue', icon: Receipt },
-    { to: '/admin/menu', label: 'Menu Manager', icon: ChefHat },
-    // ✅ NEW: Categories in the admin sidebar
-    { to: '/admin/categories', label: 'Categories', icon: Tags },
-    { to: '/admin/coupons', label: 'Coupons', icon: Percent },
-    { to: '/admin/users', label: 'Customers', icon: Users },
-    { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
+    { to: '/admin',            label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/admin/categories', label: 'Category',  icon: Tags },
+    { to: '/admin/menu',       label: 'Menu',      icon: ChefHat },
+    { to: '/admin/orders',     label: 'Order',     icon: Receipt },
+    { to: '/admin/reports',    label: 'Reports',   icon: BarChart3 },
   ],
 }
 
@@ -165,10 +162,6 @@ export default function DashboardLayout({
 
       {/* Main area */}
       <main className="min-h-dvh bg-neutral-50/60 dark:bg-neutral-900/30">
-        <div className="px-4 md:px-6 py-5 border-b bg-white/70 dark:bg-neutral-900/60 backdrop-blur">
-          <div className="text-xl font-semibold">{title || (role === 'admin' ? 'Admin' : 'Dashboard')}</div>
-          {subtitle && <div className="text-sm text-muted-foreground">{subtitle}</div>}
-        </div>
         <div className="p-4 md:p-6">
           {children}
         </div>

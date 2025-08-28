@@ -34,4 +34,6 @@ export const componentMap: Record<string, React.ComponentType<any>> = {
 
   // ✅ Already added earlier
   AdminCategoriesPage: lazy(() => import('../features/admin/category/CategoryList')),
+  // ✅ New
+  AdminCategoryFormPage: lazy(() => import('../features/admin/category/AdminCategoryFormPage')),
 }

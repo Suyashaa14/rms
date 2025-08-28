@@ -1,89 +1,198 @@
-import { useEffect, useState } from 'react'
-import { useCreateCategoryMutation, useUpdateCategoryMutation } from './categoryApi'
-import type { Category, CategoryCreate, Status } from '../../../types/catalog'
+import { useState } from 'react'
+import { Button } from '../../../components/ui/button'
+import { Input } from '../../../components/ui/input'
+import { Label } from '../../../components/ui/label'
+import { Textarea } from '../../../components/ui/textarea'
+import { Image as ImageIcon, Upload, X } from 'lucide-react'
 import { useCreateMediaMutation } from '../media/mediaApi'
-import { ImageIcon, XIcon } from 'lucide-react'
+import {
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+} from './categoryApi'
+import type { Category } from '../../../types/catalog'
+import AlertPopup from '../../../components/ui/AlertPopup'
 
+type Status = 'active' | 'inactive'
 
 export default function CategoryForm({
   initial,
   onDone,
 }: {
   initial?: Partial<Category>
-  onDone: (saved: Category) => void
+  onDone: (saved?: Category) => void
 }) {
-  const [name, setName] = useState(initial?.name ?? '')
-  const [description, setDescription] = useState(initial?.description ?? '')
-  const [status, setStatus] = useState<Status>((initial?.status as Status) ?? 'active')
-  const [image, setImage] = useState<number>(Number(initial?.image) || 0)
-  const [err, setErr] = useState<string | null>(null)
+  const [form, setForm] = useState({
+    name: initial?.name ?? '',
+    description: initial?.description ?? '',
+    image: (initial as any)?.image ?? null, // will hold media id or url
+    status: ((initial as any)?.status ?? 'active') as Status,
+  })
+  const [filePreview, setFilePreview] = useState<string | null>(null)
 
-  const [createCat, { isLoading: creating }] = useCreateCategoryMutation()
-  const [updateCat, { isLoading: updating }] = useUpdateCategoryMutation()
-  const [uploadMedia, { isLoading: uploading }] = useCreateMediaMutation()
+  const [createMedia, { isLoading: uploading }] = useCreateMediaMutation()
+  const [createCategory, { isLoading: creating }] = useCreateCategoryMutation()
+  const [updateCategory, { isLoading: updating }] = useUpdateCategoryMutation()
 
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const [popup, setPopup] = useState<{
+    open: boolean
+    type: 'success' | 'error'
+    title?: string
+    description?: string
+    afterClose?: () => void
+  }>({ open: false, type: 'success' })
+
+  function updateField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [key]: value }))
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    setFilePreview(URL.createObjectURL(file))
+
     const fd = new FormData()
     fd.append('file', file)
-    const res = await uploadMedia(fd).unwrap()
-    setImage(res.id)
+    try {
+      const res = await createMedia(fd).unwrap()
+      // assume API returns { id, url } — we store id for payload
+      updateField('image', res.id)
+      setPopup({
+        open: true,
+        type: 'success',
+        title: 'Image uploaded',
+        description: 'Media saved successfully.',
+      })
+    } catch (err: any) {
+      setPopup({
+        open: true,
+        type: 'error',
+        title: 'Image upload failed',
+        description: err?.data?.message ?? 'Please try again.',
+      })
+    }
   }
 
   async function submit() {
-    setErr(null)
-    if (!name.trim()) return setErr('Name is required')
-    if (!image) return setErr('Please upload an image first')
-    const payload: CategoryCreate = { name, description, image, status }
-    const saved = initial?.id
-      ? await updateCat({ id: initial.id!, body: payload }).unwrap()
-      : await createCat(payload).unwrap()
-    onDone(saved)
+    const payload = {
+      name: form.name.trim(),
+      description: form.description.trim(),
+      image: form.image as number | string, // SAME as create
+      status: form.status as Status,
+    }
+
+    if (!payload.name) {
+      setPopup({ open: true, type: 'error', title: 'Name required', description: 'Please enter a category name.' })
+      return
+    }
+    if (!payload.image) {
+      setPopup({ open: true, type: 'error', title: 'Image required', description: 'Please upload an image.' })
+      return
+    }
+
+    try {
+      let saved: Category
+      if ((initial as any)?.id) {
+        const idNum = Number((initial as any).id)
+        saved = await updateCategory({ id: idNum, data: payload }).unwrap()
+        setPopup({
+          open: true,
+          type: 'success',
+          title: 'Success',
+          description: 'Category updated successfully.',
+          afterClose: () => onDone(saved),
+        })
+      } else {
+        saved = await createCategory(payload).unwrap()
+        setPopup({
+          open: true,
+          type: 'success',
+          title: 'Success',
+          description: 'Category created successfully.',
+          afterClose: () => onDone(saved),
+        })
+      }
+    } catch (err: any) {
+      setPopup({
+        open: true,
+        type: 'error',
+        title: 'Save failed',
+        description: err?.data?.message ?? 'Something went wrong.',
+      })
+    }
   }
 
-  useEffect(() => {
-    setName(initial?.name ?? '')
-    setDescription(initial?.description ?? '')
-    setStatus((initial?.status as Status) ?? 'active')
-    setImage(Number(initial?.image) || 0)
-  }, [initial])
-
   return (
-    <div className="space-y-3">
-      <div>
-        <label className="text-sm font-medium">Name</label>
-        <input className="w-full border rounded-lg px-3 py-2" value={name} onChange={(e) => setName(e.target.value)} />
-      </div>
-      <div>
-        <label className="text-sm font-medium">Description</label>
-        <textarea className="w-full border rounded-lg px-3 py-2" value={description} onChange={(e) => setDescription(e.target.value)} />
-      </div>
-      <div className="grid sm:grid-cols-2 gap-3">
-        <div>
-          <label className="text-sm font-medium">Status</label>
-          <select className="w-full border rounded-lg px-3 py-2" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
-            <option value="active">active</option>
-            <option value="inactive">inactive</option>
-          </select>
+    <>
+      <div className="rounded-2xl border bg-white">
+        <div className="p-4 border-b bg-neutral-50">
+          <h2 className="font-medium">
+            {(initial as any)?.id ? 'Edit Category' : 'Create Category'}
+          </h2>
         </div>
-        <div>
-          <label className="text-sm font-medium flex items-center gap-2"><ImageIcon className="w-4 h-4" /> Category Image</label>
-          <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading} />
-          {image ? <div className="text-xs text-green-600">Uploaded. Media ID: {image}</div> : <div className="text-xs text-gray-500">No image uploaded</div>}
+
+        <div className="p-6 grid gap-6">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Name</Label>
+            <Input id="name" placeholder="e.g., Burgers"
+              value={form.name}
+              onChange={(e) => updateField('name', e.target.value)} />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea id="description" placeholder="Short description (optional)"
+              value={form.description}
+              onChange={(e) => updateField('description', e.target.value)} />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Image</Label>
+            <div className="flex items-center gap-3">
+              <div className="h-16 w-16 rounded-lg bg-neutral-100 overflow-hidden flex items-center justify-center">
+                {filePreview ? (
+                  <img src={filePreview} alt="preview" className="h-full w-full object-cover" />
+                ) : typeof (initial as any)?.image === 'string' ? (
+                  <img src={String((initial as any)?.image)} alt="current" className="h-full w-full object-cover" />
+                ) : (
+                  <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                )}
+              </div>
+              <div>
+                <label className="inline-flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg border bg-white hover:bg-neutral-50">
+                  <Upload className="w-4 h-4" />
+                  <span>Upload image</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                </label>
+                {uploading && <div className="text-xs text-muted-foreground mt-1">Uploading…</div>}
+                {form.image && !uploading && (
+                  <div className="text-xs text-muted-foreground mt-1">Media ID: {String(form.image)}</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <Button onClick={submit} disabled={creating || updating || uploading}>
+              {(initial as any)?.id ? 'Update Category' : 'Create Category'}
+            </Button>
+            <Button variant="outline" type="button" onClick={() => onDone(undefined)}>
+              <X className="w-4 h-4 mr-1" /> Cancel
+            </Button>
+          </div>
         </div>
       </div>
 
-      {err && <div className="text-sm text-red-600">{err}</div>}
-
-      <div className="flex gap-2 pt-2">
-        <button className="px-4 py-2 rounded-lg bg-black text-white disabled:opacity-50" onClick={submit} disabled={creating || updating || uploading}>
-          {initial?.id ? 'Update Category' : 'Create Category'}
-        </button>
-        <button className="px-3 py-2 rounded-lg bg-gray-100" type="button" onClick={() => onDone as any}>
-          <XIcon className="w-4 h-4 inline-block mr-1" /> Close
-        </button>
-      </div>
-    </div>
+      <AlertPopup
+        open={popup.open}
+        type={popup.type}
+        title={popup.title}
+        description={popup.description}
+        onClose={() => {
+          const cb = popup.afterClose
+          setPopup((p) => ({ ...p, open: false, afterClose: undefined }))
+          cb?.()
+        }}
+      />
+    </>
   )
 }

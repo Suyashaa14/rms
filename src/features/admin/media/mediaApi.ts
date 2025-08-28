@@ -10,7 +10,8 @@ export const mediaApi = createApi({
         url: '/media',
         method: 'POST',
         data: form,
-        headers: { /* Let Axios set multipart boundary automatically */ },
+        // Important: override default JSON header so multipart body is sent correctly
+        headers: { 'Content-Type': 'multipart/form-data' },
       }),
     }),
   }),

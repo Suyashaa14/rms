@@ -1,6 +1,13 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { axiosBaseQuery } from '../../../lib/rtkAxiosBaseQuery'
-import type { Category, CategoryCreate } from '../../../types/catalog'
+import type { Category } from '../../../types/catalog'
+
+type CategoryPayload = {
+  name: string
+  description?: string
+  image: number | string
+  status?: 'active' | 'inactive'
+}
 
 export const categoryApi = createApi({
   reducerPath: 'categoryApi',
@@ -17,21 +24,50 @@ export const categoryApi = createApi({
             ]
           : [{ type: 'Category', id: 'LIST' }],
     }),
-    getCategory: builder.query<Category, number>({
+
+    getCategory: builder.query<Category, number | string>({
       query: (id) => ({ url: `/category/${id}`, method: 'GET' }),
       providesTags: (_r, _e, id) => [{ type: 'Category', id }],
     }),
-    createCategory: builder.mutation<Category, CategoryCreate>({
-      query: (body) => ({ url: '/category', method: 'POST', data: body }),
+
+    // POST /api/category
+    createCategory: builder.mutation<Category, CategoryPayload>({
+      query: (data) => ({
+        url: '/category',
+        method: 'POST',
+        data,
+        headers: { 'Content-Type': 'application/json' },
+      }),
       invalidatesTags: [{ type: 'Category', id: 'LIST' }],
     }),
-    updateCategory: builder.mutation<Category, { id: number; body: CategoryCreate }>({
-      query: ({ id, body }) => ({ url: `/category/${id}`, method: 'PUT', data: body }),
-      invalidatesTags: (_r, _e, { id }) => [{ type: 'Category', id }, { type: 'Category', id: 'LIST' }],
+
+    // PUT /api/category/:id  (same body as create)
+    updateCategory: builder.mutation<
+      Category,
+      { id: number | string; data: CategoryPayload }
+    >({
+      query: ({ id, data }) => ({
+        url: `/category/${id}`,
+        method: 'PUT',
+        data,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+      invalidatesTags: (_r, _e, arg) => [
+        { type: 'Category', id: arg.id },
+        { type: 'Category', id: 'LIST' },
+      ],
     }),
-    deleteCategory: builder.mutation<void, number>({
-      query: (id) => ({ url: `/category/${id}`, method: 'DELETE' }),
-      invalidatesTags: (_r, _e, id) => [{ type: 'Category', id }, { type: 'Category', id: 'LIST' }],
+
+    // DELETE /api/category/:id  (no payload, no query params)
+    deleteCategory: builder.mutation<{ success?: boolean }, number | string>({
+      query: (id) => ({
+        url: `/category/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_r, _e, id) => [
+        { type: 'Category', id },
+        { type: 'Category', id: 'LIST' },
+      ],
     }),
   }),
 })
