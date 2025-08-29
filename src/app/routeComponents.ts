@@ -23,17 +23,18 @@ export const componentMap: Record<string, React.ComponentType<any>> = {
   AdminDashboard: lazy(() => import('../features/admin/AdminDashboard')),
   AdminOrdersPage: lazy(() => import('../features/admin/orders/AdminOrdersPage')),
   AdminOrderDetailPage: lazy(() => import('../features/admin/orders/AdminOrderDetailPage')),
+
+  // Menu (admin)
   AdminMenuPage: lazy(() => import('../features/admin/menu/AdminMenuPage')),
+  AdminMenuFormPage: lazy(() => import('../features/admin/menu/AdminMenuFormPage')),  // <-- used by create & edit
+  AdminMenuViewPage: lazy(() => import('../features/admin/menu/AdminMenuViewPage')),  // <-- view page
+
+  // Categories (admin)
+  AdminCategoriesPage: lazy(() => import('../features/admin/category/CategoryList')),
+  AdminCategoryFormPage: lazy(() => import('../features/admin/category/AdminCategoryFormPage')),
+
+  // Other admin pages
   AdminUsersPage: lazy(() => import('../features/admin/users/AdminUsersPage')),
   AdminCouponsPage: lazy(() => import('../features/admin/coupons/AdminCouponsPage')),
   AdminReportsPage: lazy(() => import('../features/admin/reports/AdminReportsPage')),
-
-  // ✅ New: full-page create/edit for Menu
-  AdminMenuCreatePage: lazy(() => import('../features/admin/menu/AdminMenuFormPage')),
-  AdminMenuEditPage: lazy(() => import('../features/admin/menu/AdminMenuFormPage')),
-
-  // ✅ Already added earlier
-  AdminCategoriesPage: lazy(() => import('../features/admin/category/CategoryList')),
-  // ✅ New
-  AdminCategoryFormPage: lazy(() => import('../features/admin/category/AdminCategoryFormPage')),
 }

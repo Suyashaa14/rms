@@ -51,12 +51,13 @@
       "layout": "dashboard",
       "role": "both"
     },
+
     {
       "name": "AdminDashboard",
       "path": "/admin",
       "component": "AdminDashboard",
       "title": "Admin Home",
-      "subtitle": "Today\u2019s snapshot and quick links",
+      "subtitle": "Today’s snapshot and quick links",
       "layout": "dashboard",
       "role": "admin"
     },
@@ -77,6 +78,7 @@
       "layout": "dashboard",
       "role": "admin"
     },
+
     {
       "name": "AdminCategories",
       "path": "/admin/categories",
@@ -85,7 +87,7 @@
       "subtitle": "Create, edit, and organize categories",
       "layout": "dashboard",
       "role": "admin"
-    },  
+    },
     {
       "name": "AdminCategoryCreate",
       "path": "/admin/category/create",
@@ -103,7 +105,8 @@
       "subtitle": "Update category",
       "layout": "dashboard",
       "role": "admin"
-    },  
+    },
+
     {
       "name": "AdminMenu",
       "path": "/admin/menu",
@@ -114,23 +117,30 @@
       "role": "admin"
     },
     {
-      "name": "AdminMenuCreate",
-      "path": "/admin/menu/new",
-      "component": "AdminMenuCreatePage",
-      "title": "Create Item",
-      "subtitle": "Add a new menu item",
+      "name": "AdminMenuView",
+      "path": "/admin/menu/:id",
+      "component": "AdminMenuViewPage",
+      "title": "View Menu",
       "layout": "dashboard",
       "role": "admin"
     },
     {
+      "name": "AdminMenuCreate",
+      "path": "/admin/menu/create",
+      "component": "AdminMenuFormPage",
+      "layout": "dashboard",
+      "role": "admin",
+      "title": "Create Menu"
+    },
+    {
       "name": "AdminMenuEdit",
       "path": "/admin/menu/:id/edit",
-      "component": "AdminMenuEditPage",
-      "title": "Edit Item",
-      "subtitle": "Update item details",
+      "component": "AdminMenuFormPage",
       "layout": "dashboard",
-      "role": "admin"
+      "role": "admin",
+      "title": "Edit Menu"
     },
+
     {
       "name": "AdminUsers",
       "path": "/admin/users",
